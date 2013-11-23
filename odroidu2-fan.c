@@ -19,23 +19,26 @@ typedef struct
 {
     const char * tmu;
     const char * pwm;
+    const char * pwm_enable;
     int tmu_divisor;
 } Mode;
 
-#define MODES_COUNT 2
+#define MODES_COUNT 3
 
 const Mode modes[MODES_COUNT] =
 {
     {
         .tmu = "/sys/devices/platform/tmu/temperature",
         .pwm = "/sys/devices/platform/odroid-fan/pwm_duty",
+        .pwm_enable = NULL,
         .tmu_divisor = 1
     },
     {
         .tmu = "/sys/devices/virtual/thermal/thermal_zone0/temp",
         .pwm = "/sys/devices/platform/odroidu2-fan/pwm_duty",
+        .pwm_enable = "/sys/devices/platform/odroidu2-fan/pwm_enable",
         .tmu_divisor = 1000
-    }
+    },
 };
 
 int detect_mode ( void )
@@ -73,17 +76,26 @@ void u2_service ( const int mode, const int lower, const int upper, bool forceUp
 {
     FILE * fp_tmu = fopen ( modes[mode].tmu, "r" );
     FILE * fp_fan = fopen ( modes[mode].pwm, "w" );
+    FILE * fp_fan_enable = fopen ( modes[mode].pwm_enable, "w" );
 
     if ( !fp_tmu )
     {
         if ( log )
             fprintf ( stderr, "odroidu2-fan: cannot open tmu file: %s\n", modes[mode].tmu );
         return;
-    };
+    }
+
     if ( !fp_fan )
     {
         if ( log )
             fprintf ( stderr, "odroidu2-fan: cannot open fan file: %s\n", modes[mode].pwm );
+        return;
+    }
+
+    if ( !fp_fan_enable )
+    {
+        if ( log )
+            fprintf ( stderr, "odroidu2-fan: cannot open fan file: %s\n", modes[mode].pwm_enable );
         return;
     }
 
@@ -121,9 +133,19 @@ void u2_service ( const int mode, const int lower, const int upper, bool forceUp
         fputs ( to_write, fp_fan );
         fflush ( fp_fan );
 
+        if ( target_pwm_value == 0 ) {
+            fputs("0", fp_fan_enable);
+            fflush ( fp_fan_enable );
+        }
+        else {
+            fputs("1", fp_fan_enable);
+            fflush ( fp_fan_enable );
+        }
+
         last_pwm_value = target_pwm_value;
     }
 
+    fclose ( fp_fan_enable );
     fclose ( fp_fan );
     fclose ( fp_tmu );
 }
@@ -201,11 +223,20 @@ int main ( int argc, char *argv[] )
     {
         mode = detect_mode();
     }
-
+    
     if ( mode < 0 )
     {
-        fprintf ( stderr, "Unable to detect kernel 3.0 style or 3.8 style TMU or PWM\n" );
+        fprintf ( stderr, "Unable to detect kernel 3.0 style or 3.8+ style TMU or PWM\n" );
         showHelp ( argv[0] );
+    }
+
+    if ( mode > 0 )
+    {
+        fprintf ( stderr, "Stopping fan for init, using %s\n", modes[mode-1].pwm_enable );
+        FILE * fp_fan_enable = fopen ( modes[mode-1].pwm_enable, "w" );
+        fputs("0", fp_fan_enable);
+        fflush ( fp_fan_enable );
+        fclose ( fp_fan_enable );
     }
 
     if ( upper > 100 )

@@ -99,16 +99,19 @@ void u2_service ( const int mode, const int lower, const int upper, bool forceUp
      * Since we know that the first throttle happens at 85C, 85C is a temperature that we don't want.
      * we'll set our max speed temp as 80C
      */
+    static int last_pwm_value = 0;
 
-    int target_pwm_value = 255 * ( temperature - lower ) / upper;
+    float inc_pwm_value = (255 / (upper - lower));
+    int target_pwm_value = inc_pwm_value * ( temperature - lower );	
 
-    if ( target_pwm_value <= 0 )
+    if (( target_pwm_value <= 0 ) && (temperature <= lower))
         target_pwm_value = 0;
+
+    if ((target_pwm_value == 0) && (temperature > lower))    
+	target_pwm_value = last_pwm_value;
 
     if ( target_pwm_value > 255 )
         target_pwm_value = 255;
-
-    static int last_pwm_value = 0;
 
     if ( log )
     {

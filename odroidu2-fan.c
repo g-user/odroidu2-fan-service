@@ -4,6 +4,7 @@
  *  Created on: May 9, 2013
  *  Original Author: mdrjr
  *  Modified by: zinc (https://github.com/severnt/)
+ *  Modified by: nmaas87 (https://github.com/nmaas87/)
  *
  * Public domain
  */
@@ -28,12 +29,12 @@ const Mode modes[MODES_COUNT] =
 {
     {
         .tmu = "/sys/devices/platform/tmu/temperature",
-        .pwm = "/sys/devices/platform/odroid-fan/pwm_duty",
+        .pwm = "/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1",
         .tmu_divisor = 1
     },
     {
         .tmu = "/sys/devices/virtual/thermal/thermal_zone0/temp",
-        .pwm = "/sys/devices/platform/odroidu2-fan/pwm_duty",
+        .pwm = "/sys/devices/platform/pwm-fan/hwmon/hwmon0/pwm1",
         .tmu_divisor = 1000
     }
 };

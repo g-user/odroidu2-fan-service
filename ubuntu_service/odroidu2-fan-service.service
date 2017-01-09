@@ -1,0 +1,11 @@
+[Unit]
+Description=ODROID U2 FAN Service
+
+[Service]
+Type=forking
+ExecStart=/sbin/odroidu2-fan -d
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+

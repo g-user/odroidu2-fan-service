@@ -7,7 +7,7 @@ It will check the current SoC temperature and based on that, set the FAN PWM con
 By default it understands that the maximum cpu temperature that can be achieved without throttle is 85C,
 so, knowning that we setted a limit of 80C where at 80C fan speed will be at max.
 
-nmaas87: I changed some settings to use this on an 4.10.0-rc2-next-20170106 Kernel, where the odroid fan device is not available
+nmaas87: I changed some settings to use this on an 4.10.0-rc2-next-20170106 Kernel, where the odroid fan device is not available, also added the systemd service
 
 Requirements:
 
@@ -32,3 +32,7 @@ make
 
 # Install upstart service and the program to /bin
 make usi
+
+# If you're on systemd (i.e. Ubuntu 16.04) install with
+make systemd
+

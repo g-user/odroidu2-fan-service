@@ -7,3 +7,9 @@ clean:
 usi:
 	sudo cp odroidu2-fan /sbin
 	sudo cp ubuntu_service/odroidu2-fan-service.conf /etc/init
+
+systemd:
+	sudo cp odroidu2-fan /sbin
+	sudo cp ubuntu_service/odroidu2-fan-service.service /lib/systemd/system/odroidu2-fan-service.service
+	sudo systemctl start odroidu2-fan-service.service
+

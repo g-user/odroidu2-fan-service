@@ -7,7 +7,7 @@ so, knowning that we setted a limit of 80C where at 80C fan speed will be at max
 
 My goal here was to tweak the thresholds to my liking.
 
-nmaas87: I changed some settings to use this on an 4.10.0-rc2-next-20170106 Kernel, where the odroid fan device is not available
+nmaas87: I changed some settings to use this on an 4.10.0-rc2-next-20170106 Kernel, where the odroid fan device is not available, also added the systemd service
 
 # Requirements:
 
@@ -26,3 +26,6 @@ nmaas87: I changed some settings to use this on an 4.10.0-rc2-next-20170106 Kern
 	make
 	# Install upstart service and the program to /bin
 	make usi
+	# If you're on systemd (i.e. Ubuntu 16.04) install with
+	make systemd
+
